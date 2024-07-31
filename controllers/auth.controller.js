@@ -1,6 +1,8 @@
+import { tokenName } from "../config/index.js";
 import { cookieOptions } from "../constant/index.js";
 import { User } from "../models/user.model.js";
 import { generateToken } from "../utils/index.js";
+import bcrypt from "bcryptjs";
 
 // registration
 export async function handleUserRegistration(req, res) {
@@ -24,7 +26,7 @@ export async function handleUserRegistration(req, res) {
         const token = generateToken(user._id);
         user.password = undefined;
         res
-            .cookie("userToken", token, cookieOptions)
+            .cookie(tokenName, token, cookieOptions)
             .customResponse(201, "registration completed successfully", user);
     } catch (err) {
         res.customResponse(500, "internal server error");
@@ -34,9 +36,33 @@ export async function handleUserRegistration(req, res) {
 
 
 // login
-// export async function handleLogin(req, res){
-//     const {email, password} = req.body;
-//     if(!email || !password){
-//         return res.customResponse(400,)
-//     }
-// }
+export async function handleUserLogin(req, res) {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.customResponse(400, "email or password not valid!");
+        }
+
+        const userData = await User.findOne({ email });
+        if (!userData) {
+            return res.customResponse(404, "account doesnot exist");
+        }
+
+        const isPasswordValid = await bcrypt.compare(password,userData.password);
+        if(!isPasswordValid){
+            return res.customResponse(400, "password not match");
+        }
+        const token = generateToken(userData._id);
+        userData.password = undefined;
+        res.cookie(tokenName, token, cookieOptions).customResponse(200, "log in completed successfully", userData)
+    } catch (err) {
+        res.customResponse(500, "internal server error");
+    }
+}
+
+// logout
+export async function handleUserLogout(req, res){
+    const token = req.cookies[tokenName];
+    // todo: verify jwt token middleware...
+    res.customResponse(200,"logout completed successfully")
+}

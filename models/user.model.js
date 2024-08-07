@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
     password:{
         type:String,
         require:[true,"password required"],
+        select:false,
     },
     phone:{
         type:String,

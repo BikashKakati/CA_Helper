@@ -1,7 +1,11 @@
 import jwt from "jsonwebtoken"
 import { tokenSecret } from "../config/index.js"
 
-export function generateToken(userId){
-    const userAccessToken = jwt.sign({id:userId},tokenSecret,{ expiresIn: '24h' });
-    return userAccessToken;
+export async function generateToken(userId) {
+    try {
+        const userAccessToken = await jwt.sign({ id: userId }, tokenSecret);
+        return userAccessToken;
+    } catch (err) {
+        console.log(err);
+    }
 }

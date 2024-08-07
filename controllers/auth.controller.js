@@ -43,7 +43,7 @@ export async function handleUserLogin(req, res) {
             return res.customResponse(400, "email or password not valid!");
         }
 
-        const userData = await User.findOne({ email });
+        const userData = await User.findOne({ email }).select("+password");
         if (!userData) {
             return res.customResponse(404, "account doesnot exist");
         }
@@ -52,9 +52,11 @@ export async function handleUserLogin(req, res) {
         if(!isPasswordValid){
             return res.customResponse(400, "password not match");
         }
-        const token = generateToken(userData._id);
+        
+        const token = await generateToken(userData._id);
         userData.password = undefined;
-        res.cookie(tokenName, token, cookieOptions).customResponse(200, "log in completed successfully", userData)
+        res.cookie(tokenName, token, cookieOptions).customResponse(200, "log in completed successfully", userData);
+
     } catch (err) {
         res.customResponse(500, "internal server error");
     }
@@ -62,7 +64,17 @@ export async function handleUserLogin(req, res) {
 
 // logout
 export async function handleUserLogout(req, res){
-    const token = req.cookies[tokenName];
+    
     // todo: verify jwt token middleware...
-    res.customResponse(200,"logout completed successfully")
+    res.cookie(tokenName,"",{...cookieOptions,maxAge:0}).customResponse(200,"logout completed successfully")
+}
+
+export async function handleGetUserData(req,res){
+    const userId = req.userId;
+
+    const userData = await User.findById(userId);
+    if(!userData){
+        return res.customResponse(401,"invalid access token");
+    }
+    return res.customResponse(200,"user data is here",userData);
 }

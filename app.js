@@ -1,9 +1,10 @@
-import express from "express"
-import cors from "cors";
-import { clientPort } from "./config/index.js";
 import cookieParser from "cookie-parser";
-import { authRouter } from "./routes/auth.routes.js";
+import cors from "cors";
+import express from "express";
+import { clientPort } from "./config/index.js";
 import { customResponse } from "./middlewares/customResponse.middleware.js";
+import { authRouter } from "./routes/auth.routes.js";
+import { inviteRouter } from "./routes/invite.routes.js";
 export const app = express();
 
 
@@ -16,5 +17,5 @@ app.use(cookieParser());
 app.use(customResponse);
 // routes
 app.use("/api/v1/user",authRouter);
-
+app.use("/api/v1/invite",inviteRouter);
 

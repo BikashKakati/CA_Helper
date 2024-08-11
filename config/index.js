@@ -1,5 +1,10 @@
 export const serverPort = process.env.SERVER_PORT || 8000;
 export const clientPort = process.env.CLIENT_PORT || 5173;
+export const clientUrl = process.env.CLIENT_URL;
 export const databseUri = process.env.DATABASE_URI;
 export const tokenSecret = process.env.TOKEN_SECRET;
 export const tokenName = process.env.TOKEN_NAME;
+export const hostName = process.env.GOOGLE_HOST;
+export const portNumber = process.env.GOOGLE_PORT;
+export const hostEmail = process.env.GOOGLE_EMAIL;
+export const hostPassword = process.env.GOOGLE_APP_PASSWORD;

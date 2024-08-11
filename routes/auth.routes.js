@@ -8,3 +8,4 @@ authRouter.route("/register").post(handleUserRegistration);
 authRouter.route("/login").post(handleUserLogin);
 authRouter.route("/logout").post(verifyJWT,handleUserLogout);
 authRouter.route("/userdata").get(verifyJWT,handleGetUserData);
+

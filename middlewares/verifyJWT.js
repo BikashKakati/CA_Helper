@@ -10,8 +10,6 @@ export async function verifyJWT(req, res, next){
     }
 
     const decodedData = await jwt.verify(token,tokenSecret);
-    // const userData = await User.findById(decodedData?.id).select("-password");
-    // conosle.log(userData);
 
     if(!decodedData?.id){
         return res.customResponse(401,"invalid access token");

@@ -23,7 +23,7 @@ export async function handleUserRegistration(req, res) {
             password,
             role: [role],
         })
-        const token = generateToken(user._id);
+        const token = await generateToken(user._id);
         user.password = undefined;
         res
             .cookie(tokenName, token, cookieOptions)
@@ -48,11 +48,11 @@ export async function handleUserLogin(req, res) {
             return res.customResponse(404, "account doesnot exist");
         }
 
-        const isPasswordValid = await bcrypt.compare(password,userData.password);
-        if(!isPasswordValid){
+        const isPasswordValid = await bcrypt.compare(password, userData.password);
+        if (!isPasswordValid) {
             return res.customResponse(400, "password not match");
         }
-        
+
         const token = await generateToken(userData._id);
         userData.password = undefined;
         res.cookie(tokenName, token, cookieOptions).customResponse(200, "log in completed successfully", userData);
@@ -63,18 +63,22 @@ export async function handleUserLogin(req, res) {
 }
 
 // logout
-export async function handleUserLogout(req, res){
-    
+export async function handleUserLogout(req, res) {
+
     // todo: verify jwt token middleware...
-    res.cookie(tokenName,"",{...cookieOptions,maxAge:0}).customResponse(200,"logout completed successfully")
+    res.cookie(tokenName, "", { ...cookieOptions, maxAge: 0 }).customResponse(200, "logout completed successfully")
 }
 
-export async function handleGetUserData(req,res){
-    const userId = req.userId;
+export async function handleGetUserData(req, res) {
+    try {
+        const userId = req.userId;
 
-    const userData = await User.findById(userId);
-    if(!userData){
-        return res.customResponse(401,"invalid access token");
+        const userData = await User.findById(userId);
+        if (!userData) {
+            return res.customResponse(401, "invalid access token");
+        }
+        res.customResponse(200, "user data is here", userData);
+    } catch (err) {
+        res.customResponse(400, "internal server error");
     }
-    return res.customResponse(200,"user data is here",userData);
 }
